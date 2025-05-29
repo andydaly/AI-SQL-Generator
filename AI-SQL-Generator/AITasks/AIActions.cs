@@ -1,9 +1,4 @@
 ﻿using OpenAI.Chat;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AISQLGenerator.AITasks
 {
@@ -20,7 +15,7 @@ namespace AISQLGenerator.AITasks
 
             List<ChatMessage> messages = new List<ChatMessage>()
             {
-                new SystemChatMessage("You are a helpful assistant."),
+                new SystemChatMessage("You are a SQL query generator. You respond ONLY with valid SQL SELECT statements. Do not include explanations, formatting, or additional text. Do not include code blocks, markdown, or anything else."),
                 new UserChatMessage(questionText),
             };
 

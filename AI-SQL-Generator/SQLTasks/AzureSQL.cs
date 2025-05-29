@@ -1,10 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
+using System.Data;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AISQLGenerator.SQLTasks
 {
@@ -160,6 +156,36 @@ namespace AISQLGenerator.SQLTasks
                 }
             }
             return foreignKeys;
+        }
+
+
+
+        //public bool IsSqlQueryValid(string query, out string errorMessage)
+        public bool IsSqlQueryValid(string query)
+        {
+            //errorMessage = null;
+            try
+            {
+                using (var connection = new SqlConnection(ConnectionString))
+                {
+                    connection.Open();
+
+                    using (var transaction = connection.BeginTransaction())
+                    using (var command = new SqlCommand(query, connection, transaction))
+                    {
+                        command.CommandType = CommandType.Text;
+                        command.ExecuteReader().Close();
+                        transaction.Rollback();
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                //errorMessage = ex.Message;
+                return false;
+            }
         }
     }
 }
