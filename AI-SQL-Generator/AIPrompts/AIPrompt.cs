@@ -76,12 +76,14 @@ namespace AI_SQL_Generator.AIPrompts
         public string ClarificationInfo()
         {
             return "Important Instructions:\n"
-                + "- Only output a valid SQL SELECT query that answers the question exactly.\n"
+                + "- Only output one single valid SQL SELECT query that answers the question exactly.\n"
+                + "- Do not output more than one SQL statement.\n"
+                + "- You are allowed to use subqueries (sub-selects) within the single SELECT statement.\n"
                 + "- Use COUNT and GROUP BY if the query logic requires identifying duplicates or aggregations.\n"
                 + "- Use JOINs to combine data from multiple tables when necessary.\n"
                 + "- Do not return any text, explanation, formatting, or code block markers."
                 + "- Use fully qualified column names where ambiguity may exist\n"
-                + "- Output must be plain SQL.\n";
+                + "- Output must be plain SQL, and must end with a single semicolon.\n";
         }
     }
 }
