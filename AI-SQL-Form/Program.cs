@@ -18,7 +18,10 @@ namespace AI_SQL_Form
             string endpoint = configuration["ApiSettings:Endpoint"];
             string apiKey = configuration["ApiSettings:ApiKey"];
             string deploymentName = configuration["ApiSettings:DeploymentName"];
+            string connectionString = configuration["ConnectionStrings:DefaultConnection"];
             AzureOpenAI azureOpenAI = new AzureOpenAI(endpoint, apiKey, deploymentName);
+            if (!string.IsNullOrEmpty(connectionString))
+                azureOpenAI.ConnectionString = connectionString;
 
             ApplicationConfiguration.Initialize();
             Application.Run(new Form1(azureOpenAI));

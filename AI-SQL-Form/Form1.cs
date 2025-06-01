@@ -1,9 +1,8 @@
 using AI_SQL_Generator.AIPrompts;
 using AISQLGenerator.AITasks;
 using AISQLGenerator.SQLTasks;
-using System.Net.Http.Headers;
-using System.Web;
-using System.Xml.Linq;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace AI_SQL_Form
 {
@@ -14,11 +13,19 @@ namespace AI_SQL_Form
         public Form1(AzureOpenAI AzureOpenAI)
         {
             azureOpenAI = AzureOpenAI;
+
             InitializeComponent();
             SetPlaceholder();
+            if (!string.IsNullOrEmpty(azureOpenAI.ConnectionString))
+            {
+                textBox1.Text = azureOpenAI.ConnectionString;
+                textBox1.ForeColor = Color.Black;
+                ConnectionString = azureOpenAI.ConnectionString;
+            }
             textBox2.Visible = false;
             button2.Visible = false;
             textBox3.Visible = false;
+            button3.Visible = false;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -33,7 +40,6 @@ namespace AI_SQL_Form
             AzureSQL azureSQL = new AzureSQL();
             if (azureSQL.TestConnection(ConnectionString))
             {
-                MessageBox.Show("Connection successful!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 azureSQL.SetConnectionString(ConnectionString);
                 treeView1.Nodes.Clear();
                 List<string> tableNames = azureSQL.GetTableNames();
@@ -58,11 +64,11 @@ namespace AI_SQL_Form
                     treeView1.Nodes.Add(foreignKeyNode);
                 }
 
-
                 treeView1.ExpandAll();
                 textBox2.Visible = true;
                 button2.Visible = true;
                 textBox3.Visible = true;
+                
             }
             else
             {
@@ -70,6 +76,7 @@ namespace AI_SQL_Form
                 textBox2.Visible = false;
                 button2.Visible = false;
                 textBox3.Visible = false;
+                button3.Visible = false;
                 return;
             }
 
@@ -85,6 +92,7 @@ namespace AI_SQL_Form
             }
 
             AzureSQL azureSQL = new AzureSQL();
+            string sqlResponse = string.Empty;
             if (azureSQL.TestConnection(ConnectionString))
             {
                 azureSQL.SetConnectionString(ConnectionString);
@@ -92,8 +100,35 @@ namespace AI_SQL_Form
                 string databaseInfo = aiPrompt.GenerateDatabaseInfo(azureSQL);
                 string prompt = aiPrompt.GeneratePrompt(databaseInfo, userPrompt);
                 AIActions aIActions = new AIActions(azureOpenAI);
-                string response = aIActions.Ask(prompt);
-                textBox3.Text = response;
+                sqlResponse = aIActions.Ask(prompt);
+                textBox3.Text = sqlResponse;
+            }
+            button3.Visible = true;
+            if (azureSQL.IsSqlQueryValid(sqlResponse))
+                button3.Enabled = true;
+            else
+                button3.Enabled = false;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            string sqlResponse = textBox3.Text;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(ConnectionString))
+                {
+                    conn.Open();
+                    SqlDataAdapter adapter = new SqlDataAdapter(sqlResponse, conn);
+                    DataTable table = new DataTable();
+                    adapter.Fill(table);
+
+                    ResultsForm resultsForm = new ResultsForm(table);
+                    resultsForm.Show();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
             }
         }
 

@@ -254,10 +254,89 @@ namespace AISQLGenerator.SQLTasks
             return foreignKeys;
         }
 
-        //public bool IsSqlQueryValid(string query, out string errorMessage)
+
+        public string GetDBVersion()
+        {
+            // Try SQL Server
+            try
+            {
+                using (var conn = new SqlConnection(ConnectionString))
+                {
+                    conn.Open();
+                    using (var cmd = new SqlCommand("SELECT @@VERSION", conn))
+                    {
+                        string version = string.Empty;
+                        version = cmd.ExecuteScalar().ToString();
+                        return version;
+                    }
+                }
+            }
+            catch { }
+
+            ////// Try MySQL
+            ////try
+            ////{
+            ////    using (var conn = new MySqlConnection(connectionString))
+            ////    {
+            ////        conn.Open();
+            ////        using (var cmd = new MySqlCommand("SELECT VERSION()", conn))
+            ////        {
+            ////            return "MySQL: " + cmd.ExecuteScalar().ToString();
+            ////        }
+            ////    }
+            ////}
+            ////catch { }
+
+            ////// Try PostgreSQL
+            ////try
+            ////{
+            ////    using (var conn = new NpgsqlConnection(connectionString))
+            ////    {
+            ////        conn.Open();
+            ////        using (var cmd = new NpgsqlCommand("SELECT version()", conn))
+            ////        {
+            ////            return "PostgreSQL: " + cmd.ExecuteScalar().ToString();
+            ////        }
+            ////    }
+            ////}
+            ////catch { }
+
+            ////// Try SQLite
+            ////try
+            ////{
+            ////    using (var conn = new SQLiteConnection(connectionString))
+            ////    {
+            ////        conn.Open();
+            ////        using (var cmd = new SQLiteCommand("SELECT sqlite_version()", conn))
+            ////        {
+            ////            return "SQLite: " + cmd.ExecuteScalar().ToString();
+            ////        }
+            ////    }
+            ////}
+            ////catch { }
+
+            ////// Try Oracle
+            ////try
+            ////{
+            ////    using (var conn = new OracleConnection(connectionString))
+            ////    {
+            ////        conn.Open();
+            ////        using (var cmd = new OracleCommand("SELECT * FROM v$version", conn))
+            ////        using (var reader = cmd.ExecuteReader())
+            ////        {
+            ////            if (reader.Read())
+            ////                return "Oracle: " + reader.GetString(0);
+            ////        }
+            ////    }
+            ////}
+            ////catch { }
+
+            return "Unknown or unsupported database engine.";
+        }
+
         public bool IsSqlQueryValid(string query)
         {
-            //errorMessage = null;
+
             try
             {
                 using (var connection = new SqlConnection(ConnectionString))

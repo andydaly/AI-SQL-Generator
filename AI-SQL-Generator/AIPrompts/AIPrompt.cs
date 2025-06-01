@@ -36,6 +36,8 @@ namespace AI_SQL_Generator.AIPrompts
         public string GenerateDatabaseInfo(AzureSQL azureSQL)
         {
             StringBuilder databaseInfoBuilder = new StringBuilder();
+            databaseInfoBuilder.AppendLine("Database Version:");
+            databaseInfoBuilder.AppendLine(azureSQL.GetDBVersion());
             databaseInfoBuilder.AppendLine("Tables:");
             List<string> tableNames = azureSQL.GetTableNames();
             foreach (var tableName in tableNames)

@@ -10,6 +10,7 @@ namespace AISQLGenerator.AITasks
         public AzureOpenAIClient OpenAIClient { get; private set; }
         public ChatClient ChatClient { get; private set; }
 
+        public string ConnectionString { get; set; } = string.Empty;
         public AzureOpenAI(string endpoint, string apiKey, string deploymentName)
         {
             OpenAIClient = new(new Uri(endpoint), new AzureKeyCredential(apiKey));
