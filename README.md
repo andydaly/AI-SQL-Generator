@@ -93,5 +93,3 @@ A: Yes—just leave it blank and manually enter DB connection details via the fo
 ##  Contributing
 
 Contributions are welcome! Please create issues or PRs for new features, bug fixes, or suggestions. Label them clearly (e.g., `enhancement`, `bug`, `docs`).
-
-
